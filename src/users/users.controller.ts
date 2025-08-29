@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query,Session } from '@nestjs/common';
 import { createUserDto } from './create-user.dto';
 import { UsersService } from './users.service';
 import { Serialze } from 'src/Interceptors/seralize.interceptor';
 import { UserDto } from './user.dto';
 import { IsEmail } from 'class-validator';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './custom decorator/current-user.decorator';
 
 
 @Controller('users')
@@ -12,23 +13,43 @@ import { AuthService } from './auth.service';
 export class UsersController {
 
     constructor(private userService : UsersService,private authService:AuthService){}
+
     @Post('/signup')
-    createUser(@Body() body:createUserDto){
+    async createUser(@Body() body:createUserDto ,@Session() session:any){
         // this.userService.create(body.email,body.password);
-        this.authService.signUp(body.email,body.password);
-        console.log(body)
+        const user=await this.authService.signUp(body.email,body.password);
+        session.userId=user.id;
+        return user;
     }
 
+    // @Get('/WhoamI')
+    // whoAmI(@Session() session:any){
+    //     console.log(session.userId)
+    //     return this.userService.findOne(session.userId);
+    // }
+
+     @Get('/WhoamI')
+    whoAmI(@CurrentUser() user:string){
+        return user;
+    }
+
+    @Post('/signOut')
+    signOut(@Session() session:any){
+        session.userId=null;
+
+    }
 
     //different way using query params   http://localhost:3000/users/filter/?email=tejaqwe@gmail.com&password=teja123
-    @Post('/filter')
+    @Post('/Signup using POST')
      createUserusingquery(@Query() query:createUserDto){
         console.log(query);
      }
 
     @Post('/signIn')
-    signIn(@Body() body:createUserDto){
-        return this.authService.signin(body.email,body.password);
+    async signIn(@Body() body:createUserDto ,@Session() session:any){
+        const user=await this.authService.signin(body.email,body.password);
+        session.userId=user.id;
+        return user;
     }
 
     // @UseInterceptors(new SerilizerInterceptor(UserDto))

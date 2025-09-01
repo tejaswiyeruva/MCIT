@@ -1,0 +1,36 @@
+# http://localhost:3000/users/1
+http://localhost:3000/users/filter/?email="tejaqwe@gmail.com"
+
+
+###set a color
+
+GET http://localhost:3000/users/colors.blue
+
+
+### signup 
+
+POST http://localhost:3000/users/signup
+content-type:application/json
+
+{
+    "email":"ishak@gmail.com",
+    "password":"ishak@123"
+}
+
+###knowing who has signedup using session ID
+GET http://localhost:3000/users/WhoAmI
+
+###signout
+GET http://localhost:3000/users/signout
+
+
+###signIn
+POST http://localhost:3000/users/signin
+content-type:application/json
+
+{
+    "email":"sathvika@gmail.com",
+    "password":"sathvika@123"
+}
+
+
